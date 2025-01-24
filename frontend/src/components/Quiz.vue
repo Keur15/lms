@@ -100,7 +100,7 @@
 						class="text-gray-900 font-semibold mt-2 leading-5"
 						v-html="questionDetails.data.question"
 					></div>
-					<div v-if="questionDetails.data.type == 'Choices'" v-for="index in 4">
+					<div v-if="questionDetails.data.type == 'Choices'" v-for="index in randomArray">
 						<label
 							v-if="questionDetails.data[`option_${index}`]"
 							class="flex items-center bg-gray-200 rounded-md p-3 mt-4 w-full cursor-pointer focus:border-blue-600"
@@ -271,6 +271,7 @@
 		</div>
 	</div>
 </template>
+
 <script setup>
 import {
 	Badge,
@@ -298,6 +299,21 @@ const possibleAnswer = ref(null)
 const timer = ref(0)
 let timerInterval = null
 const router = useRouter()
+
+// get random array of options
+const getRandomOptions = () => {
+	const options = [1, 2, 3, 4]
+	for (let i = options.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1))
+		;[options[i], options[j]] = [options[j], options[i]]
+	}
+	return options
+}
+
+let randomArray = getRandomOptions();
+
+console.log(randomArray);
+
 
 const props = defineProps({
 	quizName: {
@@ -435,8 +451,9 @@ const questionDetails = createResource({
 
 watch(activeQuestion, (value) => {
 	if (value > 0) {
-		currentQuestion.value = quiz.data.questions[value - 1].question
-		questionDetails.reload()
+		currentQuestion.value = quiz.data.questions[value - 1].question;
+		questionDetails.reload();
+		randomArray = getRandomOptions();
 	}
 })
 
